@@ -1,0 +1,29 @@
+.dashboard-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;      
+  justify-content: center;  
+  min-height: 100vh;        
+  text-align: center;       
+  padding: 20px;
+}
+
+.dashboard-container button {
+  margin: 20px 0;           
+  padding: 10px 20px;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+}
+.dashboard-container button:hover {
+  background-color: #c82333;
+}
+.dashboard-container .gif {
+  width: 150px;             
+  height: auto;             
+  border-radius: 8px;       
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+}
