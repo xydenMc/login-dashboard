@@ -1,29 +1,245 @@
 .login-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background: #f2f2f2;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  
+  /* Background gambar */
+  background-image: url('https://imgs.search.brave.com/yx_Vapg9PaTUAdSY0ZcU3k3auynyydR5JtPGrvqEtmw/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9jZG4u/cGl4YWJheS5jb20v/cGhvdG8vMjAxNi8x/MS8yOS8wOC80MC9j/ZXJhbWljcy0xODY4/NDkyXzY0MC5qcGc');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
+}
+
+/* Overlay gelap untuk seluruh halaman */
+.login-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(58, 42, 32, 0.6);
+  z-index: 1;
+}
+
+/* Layout dua kolom */
+.split-layout {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  width: 90%;
+  max-width: 1200px;
+  min-height: 600px;
+  /* HAPUS background blur dan transparan */
+}
+
+/* Bagian Kiri - Selamat Datang */
+.welcome-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 3rem;
+  color: white;
+  text-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+}
+
+.welcome-title {
+  font-size: 3.5rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem 0;
+  color: #ffffff;
+}
+
+.welcome-subtitle {
+  font-size: 2rem;
+  font-weight: 400;
+  margin: 0 0 1.5rem 0;
+  color: #E6D3B1;
+}
+
+.welcome-line {
+  width: 100px;
+  height: 4px;
+  background: linear-gradient(to right, #E6D3B1, #8B5E3C);
+  border-radius: 2px;
+}
+
+/* Bagian Kanan - Form Login */
+.form-section {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  /* HAPUS background dan blur */
+}
+
+/* Card Login - Langsung di atas background */
+.login-card {
+  width: 100%;
+  max-width: 360px;
+  padding: 2rem;
+  background-color: #E6D3B1; /* Solid, tanpa transparansi */
+  border-radius: 24px;
+  box-shadow: 0 20px 40px rgba(58, 42, 32, 0.4);
+  border: 1px solid #C2A47E;
+}
+
+.form-header {
+  text-align: left;
+  color: #3A2A20;
+  font-size: 2rem;
+  font-weight: 600;
+  margin: 0 0 1.5rem 0;
+  border-bottom: 2px solid #C2A47E;
+  padding-bottom: 0.5rem;
 }
 
 .login-form {
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    width: 300px;
-    display: flex;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.form-group label {
+  color: #5A3E2B;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.form-group input {
+  padding: 0.7rem 1rem;
+  border: 1px solid #C2A47E;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  background-color: #ffffff;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #8B5E3C;
+  box-shadow: 0 0 0 3px rgba(139, 94, 60, 0.1);
+}
+
+.form-group input::placeholder {
+  color: #A1887A;
+}
+
+.password-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-input-wrapper input {
+  padding-right: 45px;
+  width: 100%;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.1rem;
+  color: #8B5E3C;
+  padding: 4px;
+  transition: color 0.2s;
+}
+
+.password-toggle:hover {
+  color: #6F4528;
+  background: none;
+}
+
+.error-message {
+  background-color: #F5E6D3;
+  color: #8B5E3C;
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  border-left: 4px solid #8B5E3C;
+}
+
+.login-button {
+  background-color: #8B5E3C;
+  color: white;
+  padding: 0.8rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: background-color 0.2s;
+  margin-top: 0.5rem;
+}
+
+.login-button:hover {
+  background-color: #6F4528;
+}
+
+.login-button:disabled {
+  background-color: #C2A47E;
+  cursor: not-allowed;
+}
+
+.login-footer {
+  text-align: center;
+  margin-top: 1.5rem;
+}
+
+.footer-line {
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(to right, transparent, #C2A47E, transparent);
+  margin-bottom: 0.6rem;
+}
+
+.footer-text {
+  color: #5A3E2B;
+  font-size: 0.7rem;
+  opacity: 0.7;
+  margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .split-layout {
     flex-direction: column;
-    gap: 10px;
-}
-
-.login-form input {
-    padding: 8px;
-}
-
-.login-form button {
-    padding: 8px;
-    background: #3498db;
-    color: white;
-    border: none;
-    cursor: pointer;
+  }
+  
+  .welcome-section {
+    align-items: center;
+    text-align: center;
+    padding: 2rem;
+  }
+  
+  .welcome-line {
+    margin: 0 auto;
+  }
+  
+  .welcome-title {
+    font-size: 2.5rem;
+  }
+  
+  .welcome-subtitle {
+    font-size: 1.5rem;
+  }
 }
