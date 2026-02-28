@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import Login from "./page/Login";
+import Register from "./page/Register"; // Import Register
 import Dashboard from "./page/Dashboard";
 import './App.css';
 
@@ -8,12 +9,15 @@ function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    // Cek apakah user sudah login saat aplikasi dimuat
     const token = localStorage.getItem("token");
     setIsAuthenticated(!!token);
   }, []);
 
   const handleLogin = () => {
+    setIsAuthenticated(true);
+  };
+
+  const handleRegister = () => {
     setIsAuthenticated(true);
   };
 
@@ -29,6 +33,14 @@ function App() {
           } 
         />
         <Route 
+          path="/register" 
+          element={
+            isAuthenticated ? 
+            <Navigate to="/dashboard" /> : 
+            <Register onRegister={handleRegister} />
+          } 
+        />
+        <Route 
           path="/dashboard" 
           element={
             isAuthenticated ? 
@@ -41,5 +53,4 @@ function App() {
   );
 }
 
-// HANYA SATU export default di sini
 export default App;

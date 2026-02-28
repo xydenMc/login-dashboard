@@ -1,7 +1,6 @@
-// Login.jsx
 import { useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom"; // Tambahkan Link
 import "./Login.css";
 
 function Login({ onLogin }) {
@@ -75,7 +74,7 @@ function Login({ onLogin }) {
                     className="password-toggle"
                     onClick={() => setShowPassword(!showPassword)}
                   >
-                    {showPassword ? "👁️‍🗨️" : "👁️‍🗨️"}
+                    {showPassword ? "👁️" : "👁️‍🗨️"}
                   </button>
                 </div>
               </div>
@@ -88,6 +87,13 @@ function Login({ onLogin }) {
                 {loading ? "LOADING..." : "LOGIN"}
               </button>
             </form>
+
+            {/* TAMBAHKAN LINK REGISTER DI SINI */}
+            <div className="register-link">
+              <p>
+                Belum punya akun? <Link to="/register">Daftar disini</Link>
+              </p>
+            </div>
 
             <div className="login-footer">
               <div className="footer-line"></div>

@@ -243,3 +243,25 @@
     font-size: 1.5rem;
   }
 }
+/* Register link di halaman login */
+.register-link {
+  text-align: center;
+  margin: 1rem 0 0.5rem 0;
+}
+
+.register-link p {
+  color: #5A3E2B;
+  font-size: 0.9rem;
+}
+
+.register-link a {
+  color: #8B5E3C;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s;
+}
+
+.register-link a:hover {
+  color: #6F4528;
+  text-decoration: underline;
+}
