@@ -1,6 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
-import { useNavigate, Link } from "react-router-dom"; // Tambahkan Link
+import { Link } from "react-router-dom";
 import "./Login.css";
 
 function Login({ onLogin }) {
@@ -9,7 +9,6 @@ function Login({ onLogin }) {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -24,8 +23,12 @@ function Login({ onLogin }) {
 
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("email", email);
+      
       if (onLogin) onLogin();
-      navigate("/dashboard");
+      
+      // Redirect menggunakan window.location
+      window.location.href = "/dashboard";
+      
     } catch (error) {
       setErrorMessage("Email atau password salah");
     } finally {
@@ -88,7 +91,6 @@ function Login({ onLogin }) {
               </button>
             </form>
 
-            {/* TAMBAHKAN LINK REGISTER DI SINI */}
             <div className="register-link">
               <p>
                 Belum punya akun? <Link to="/register">Daftar disini</Link>

@@ -161,3 +161,15 @@
     max-width: 100%;
   }
 }
+
+.logout-btn {
+  
+  cursor: pointer;
+  border: none;
+  background-color: #8B5E3C;
+  color: white;
+}
+
+.logout-btn:focus {
+  outline: none;
+}
