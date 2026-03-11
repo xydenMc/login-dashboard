@@ -31,35 +31,42 @@ function Dashboard() {
     
     fetchProducts();
   }, []);
+  useEffect(() => {
+  // Bikin variable global untuk debugging
+  window.debugProducts = products;
+  window.debugSupabase = supabase;
+  console.log("✅ Debug siap! Ketik debugProducts di console");
+}, [products]);
 
   const fetchProducts = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('products')
-        .select('*')
-        .order('id_produk', { ascending: false });
-      
-      if (error) throw error;
-      
-      // Format data sesuai struktur tabel
-      const formattedProducts = data?.map(item => ({
-        id_produk: item.id_produk,
-        nama_produk: item.nama_produk,
-        deskripsi: item.deskripsi,
-        kategori: item.kategori,
-        harga: item.harga,
-        stok: item.stok,
-        status: item.status,
-        id_kategori: item.id_kategori
-      })) || [];
-      
-      setProducts(formattedProducts);
-    } catch (error) {
-      console.error("Error fetching products:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  try {
+    const { data, error } = await supabase
+      .from('products')
+      .select('*')
+      .order('id_produk', { ascending: false });
+    
+    if (error) throw error;
+    
+    // FORMAT DATA - JANGAN LUPA GAMBAR!
+    const formattedProducts = data?.map(item => ({
+      id_produk: item.id_produk,
+      nama_produk: item.nama_produk,
+      deskripsi: item.deskripsi,
+      kategori: item.kategori,
+      harga: item.harga,
+      stok: item.stok,
+      status: item.status,
+      id_kategori: item.id_kategori,
+      gambar: item.gambar // <-- INI YANG LU LUPA!
+    })) || [];
+    
+    setProducts(formattedProducts);
+  } catch (error) {
+    console.error("Error fetching products:", error);
+  } finally {
+    setLoading(false);
+  }
+};
 
   const handleLogout = () => {
     localStorage.removeItem("token");

@@ -9,12 +9,11 @@ function ProductModal({ mode, product, onClose, onSave }) {
   const [harga, setHarga] = useState("");
   const [stok, setStok] = useState("");
   const [status, setStatus] = useState("aktif");
-  const [gambar, setGambar] = useState(null);
-  const [gambarPreview, setGambarPreview] = useState("");
   const [gambarUrl, setGambarUrl] = useState("");
   const [loading, setLoading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [imageError, setImageError] = useState(false);
+  const [notification, setNotification] = useState({ show: false, message: '', type: '' });
 
   useEffect(() => {
     if (mode === "edit" && product) {
@@ -24,94 +23,34 @@ function ProductModal({ mode, product, onClose, onSave }) {
       setHarga(product.harga || "");
       setStok(product.stok || "");
       setStatus(product.status || "aktif");
-      setGambarUrl(product.gambar || ""); 
+      setGambarUrl(product.gambar || "");
     }
   }, [mode, product]);
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      if (file.size > 2 * 1024 * 1024) {
-        alert("Ukuran gambar maksimal 2MB");
-        return;
-      }
-      if (!file.type.startsWith('image/')) {
-        alert("File harus berupa gambar");
-        return;
-      }
-      setGambar(file);
-      setGambarPreview(URL.createObjectURL(file));
-    }
-  };
-
-  const uploadImage = async () => {
-    if (!gambar) return gambarUrl;
-
-    const fileExt = gambar.name.split('.').pop();
-    const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
-    const filePath = `products/${fileName}`;
-
-    console.log("========== UPLOAD PROCESS ==========");
-    console.log("1. File name:", gambar.name);
-    console.log("2. File size:", gambar.size, "bytes");
-    console.log("3. Upload path:", filePath);
-
-    const { error: uploadError } = await supabase.storage
-      .from('product-images')
-      .upload(filePath, gambar, {
-        cacheControl: '3600',
-        upsert: false
-      });
-
-    if (uploadError) {
-      console.error("❌ UPLOAD ERROR:", uploadError);
-      throw uploadError;
-    }
-
-    console.log("✅ Upload success");
-
-    const { data } = supabase.storage
-      .from('product-images')
-      .getPublicUrl(filePath);
-
-    console.log("4. Public URL dari Supabase:", data.publicUrl);
-    
-    // FIX URL: Ganti typo kalau ada
-    let finalUrl = data.publicUrl;
-    if (finalUrl.includes('mesypcwzvyauoamisfnv')) {
-      finalUrl = finalUrl.replace('mesypcwzvyauoamisfnv', 'mesypcwzvyauoamsifnv');
-      console.log("5. URL setelah fix typo:", finalUrl);
-    }
-    
-    console.log("6. Final URL yang akan disimpan:", finalUrl);
-    console.log("====================================");
-    
-    return finalUrl;
+  // Fungsi notifikasi
+  const showNotification = (message, type = 'success') => {
+    setNotification({ show: true, message, type });
+    setTimeout(() => {
+      setNotification({ show: false, message: '', type: '' });
+    }, 3000);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setUploadProgress(10);
 
     try {
-      setUploadProgress(30);
-      const uploadedImageUrl = await uploadImage();
-      setUploadProgress(70);
-
       const productData = {
         nama_produk,
         deskripsi,
         kategori,
         harga: parseInt(harga),
-        stok: stok ? parseInt(stok) : null,
+        stok: stok ? parseInt(stok) : 0, // PASTIKAN STOK ANGKA
         status,
-        gambar: uploadedImageUrl || null
+        gambar: gambarUrl || null
       };
 
       console.log("Data yang akan disimpan:", productData);
-
-      setUploadProgress(80);
 
       if (mode === "add") {
         const { error } = await supabase
@@ -119,7 +58,7 @@ function ProductModal({ mode, product, onClose, onSave }) {
           .insert([productData]);
 
         if (error) throw error;
-        alert("✅ Produk berhasil ditambahkan!");
+        showNotification("✅ Produk berhasil ditambahkan!", 'success');
       } else {
         const { error } = await supabase
           .from('products')
@@ -127,30 +66,25 @@ function ProductModal({ mode, product, onClose, onSave }) {
           .eq('id_produk', product.id_produk);
 
         if (error) throw error;
-        alert("✅ Produk berhasil diupdate!");
+        showNotification("✅ Produk berhasil diupdate!", 'success');
       }
 
-      setUploadProgress(100);
-      onSave();
+      setTimeout(() => {
+        onSave();
+        onClose();
+      }, 1000);
+      
     } catch (error) {
-      console.error("❌ ERROR SAVING PRODUCT:", error);
-      alert("Gagal menyimpan produk: " + error.message);
+      console.error("❌ Error:", error);
+      showNotification("❌ Gagal: " + error.message, 'error');
     } finally {
       setLoading(false);
-      setUploadProgress(0);
     }
   };
 
   const handleDelete = async () => {
     setLoading(true);
     try {
-      if (product.gambar) {
-        const fileName = product.gambar.split('/').pop();
-        await supabase.storage
-          .from('product-images')
-          .remove([`products/${fileName}`]);
-      }
-
       const { error } = await supabase
         .from('products')
         .delete()
@@ -158,21 +92,36 @@ function ProductModal({ mode, product, onClose, onSave }) {
 
       if (error) throw error;
       
-      alert("✅ Produk berhasil dihapus!");
-      onSave();
-      onClose();
+      showNotification("✅ Produk berhasil dihapus!", 'success');
+      setTimeout(() => {
+        onSave();
+        onClose();
+      }, 1000);
+      
     } catch (error) {
       console.error("Error deleting product:", error);
-      alert("Gagal menghapus produk: " + error.message);
+      showNotification("❌ Gagal menghapus: " + error.message, 'error');
     } finally {
       setLoading(false);
       setShowDeleteConfirm(false);
     }
   };
 
+  const previewUrl = (!imageError && gambarUrl) 
+    ? gambarUrl 
+    : "https://images.unsplash.com/photo-1578301978018-300d7f8c7e3b?w=400";
+
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+        
+        {/* NOTIFIKASI HALUS */}
+        {notification.show && (
+          <div className={`notification ${notification.type}`}>
+            {notification.message}
+          </div>
+        )}
+
         <div className="modal-header">
           <h2>{mode === "add" ? "Tambah Produk" : "Edit Produk"}</h2>
           <button onClick={onClose} className="close-btn">&times;</button>
@@ -213,45 +162,55 @@ function ProductModal({ mode, product, onClose, onSave }) {
               />
             </div>
             <div className="form-group">
-              <label>Stok</label>
+              <label>Stok *</label>
               <input
                 type="number"
                 value={stok}
                 onChange={(e) => setStok(e.target.value)}
+                required
                 placeholder="0"
                 min="0"
               />
             </div>
           </div>
 
+          {/* BAGIAN INPUT URL GAMBAR */}
           <div className="form-group">
-            <label>Gambar Produk</label>
-            <div className="upload-container">
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleImageChange}
-                className="file-input"
-              />
-              <div className="upload-info">
-                <span>Format: JPG, PNG, GIF (max 2MB)</span>
-              </div>
+            <label>URL Gambar</label>
+            <input
+              type="url"
+              value={gambarUrl}
+              onChange={(e) => {
+                setGambarUrl(e.target.value);
+                setImageError(false);
+              }}
+              placeholder="https://images.unsplash.com/photo-xxxx"
+              className="url-input"
+            />
+            <div className="upload-info">
+              <span>Masukkan URL gambar (dari Google Images, Unsplash, dll)</span>
             </div>
             
-            {(gambarPreview || gambarUrl) && (
+            {gambarUrl && (
               <div className="image-preview-container">
                 <img 
-                  src={gambarPreview || gambarUrl} 
+                  src={previewUrl}
                   alt="Preview" 
                   className="image-preview"
+                  onError={() => setImageError(true)}
+                  style={{ width: '100%', maxHeight: '200px', objectFit: 'cover' }}
                 />
+                {imageError && (
+                  <div className="preview-error" style={{color: 'red', marginTop: '5px'}}>
+                    URL tidak valid, pakai preview default
+                  </div>
+                )}
                 <button 
                   type="button"
                   className="remove-image-btn"
                   onClick={() => {
-                    setGambar(null);
-                    setGambarPreview("");
                     setGambarUrl("");
+                    setImageError(false);
                   }}
                 >
                   ×
@@ -259,16 +218,6 @@ function ProductModal({ mode, product, onClose, onSave }) {
               </div>
             )}
           </div>
-
-          {uploadProgress > 0 && uploadProgress < 100 && (
-            <div className="upload-progress">
-              <div 
-                className="progress-bar" 
-                style={{ width: `${uploadProgress}%` }}
-              ></div>
-              <span>{uploadProgress}%</span>
-            </div>
-          )}
 
           <div className="form-group">
             <label>Deskripsi</label>

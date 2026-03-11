@@ -396,3 +396,85 @@
     max-width: 100%;
   }
 }
+
+.delete-product-btn {
+  background: #dc3545 !important;
+  color: white !important;
+  border: none;
+  padding: 0.7rem 1.5rem;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.delete-product-btn:hover {
+  background: #b71c1c !important;
+}
+
+/* Tombol Hapus di Delete Modal */
+.delete-btn {
+  background: #dc3545 !important;
+  color: white !important;
+  border: none;
+  padding: 0.7rem 1.5rem;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.delete-btn:hover {
+  background: #b71c1c !important;
+}
+
+/* Delete Confirmation Button */
+.delete-confirm-btn {
+  background: #dc3545 !important;
+  color: white !important;
+  border: none;
+  padding: 0.7rem 1.5rem;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.delete-confirm-btn:hover {
+  background: #b71c1c !important;
+}
+
+/* Tombol Hapus di Selection Bar SUDAH ADA (bg: #d32f2f) - BIAARKAN */
+
+/* ========== STATUS WARNA ========== */
+/* Update product-status di card */
+.product-status {
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: inline-block;
+}
+
+/* Status TERSEDIA - KUNING */
+.product-status.available,
+.product-status[data-status="aktif"],
+.product-status[data-status="tersedia"] {
+  background-color: #FFC107 !important; /* KUNING */
+  color: #000 !important; /* Teks hitam biar kebaca */
+}
+
+/* Status HABIS - ABU-ABU */
+.product-status[data-status="habis"],
+.product-status[data-status="nonaktif"] {
+  background-color: #6c757d !important; /* ABU-ABU */
+  color: white !important;
+}

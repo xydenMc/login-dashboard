@@ -4,84 +4,103 @@ import ProductDetailModal from "./ProductDetailModal";
 function ProductCard({ product, onEdit, showEdit }) {
   const [showDetail, setShowDetail] = useState(false);
   const [imageError, setImageError] = useState(false);
-  
-  const { 
-    nama_produk, 
-    deskripsi, 
-    kategori, 
-    harga, 
-    stok, 
+
+  const {
+    nama_produk,
+    kategori,
+    harga,
+    stok,
     status,
-    gambar 
+    gambar
   } = product;
 
-  console.log("Product card - nama:", nama_produk, "gambar:", gambar);
+  // UNSWASH IMAGES
+  const unswashImages = [
+    "https://images.unsplash.com/photo-1578301978018-300d7f8c7e3b?w=400",
+    "https://images.unsplash.com/photo-1507488557502-e3b5c7a51e1f?w=400",
+    "https://images.unsplash.com/photo-1562099601-2551d7d09f8f?w=400",
+    "https://images.unsplash.com/photo-1612198188060-c7c2a3b66eae?w=400",
+    "https://images.unsplash.com/photo-1544984241-5d5c6b9a89cf?w=400"
+  ];
 
+  const defaultImage = unswashImages[product.id_produk % unswashImages.length];
+
+  // ===== FUNGSI STATUS WARNA =====
   const getStatusColor = (status) => {
-    switch(status?.toLowerCase()) {
-      case 'aktif': return '#28a745';
-      case 'nonaktif': return '#dc3545';
-      case 'habis': return '#ffc107';
-      default: return '#6c757d';
+    switch (status?.toLowerCase()) {
+      case 'aktif':
+      case 'tersedia':
+        return '#2fc145'; // HIJAU
+      case 'nonaktif':
+        return '#6c757d'; // ABU-ABU
+      case 'habis':
+        return '#6c757d'; // ABU-ABU
+      default:
+        return '#6c757d'; // ABU-ABU
     }
   };
 
-  const getImageUrl = () => {
-    if (!gambar || imageError) {
-      return "https://via.placeholder.com/300x200?text=Toko+Gerabah";
+  const getStatusText = (status) => {
+    switch (status?.toLowerCase()) {
+      case 'aktif':
+      case 'tersedia':
+        return 'TERSEDIA';
+      case 'nonaktif':
+        return 'NONAKTIF';
+      case 'habis':
+        return 'HABIS';
+      default:
+        return status || 'TERSEDIA';
     }
-    return gambar;
   };
 
   return (
     <>
       <div className="product-card" onClick={() => setShowDetail(true)}>
         {showEdit && (
-          <button 
+          <button
             onClick={(e) => {
               e.stopPropagation();
               onEdit(product);
-            }} 
+            }}
             className="edit-btn"
           >
             ✏️
           </button>
         )}
         <div className="product-image">
-          <img 
-            src={getImageUrl()}
+          <img
+            src={!imageError && gambar ? gambar : defaultImage}
             alt={nama_produk}
-            onError={(e) => {
-              console.log("Error loading image:", gambar);
-              setImageError(true);
-              e.target.src = "https://via.placeholder.com/300x200?text=Error+Loading";
-            }}
+            onError={() => setImageError(true)}
+            style={{ width: '100%', height: '200px', objectFit: 'cover' }}
           />
         </div>
         <div className="product-info">
           <h3 className="product-title">{nama_produk}</h3>
-          
+
           {kategori && (
             <p className="product-category">
               <span className="category-badge">{kategori}</span>
             </p>
           )}
-          
+
           <p className="product-price">Rp {harga?.toLocaleString('id-ID')}</p>
-          
+
+          {/* ===== PRODUCT META - SUDAH BENER ===== */}
           <div className="product-meta">
-            {stok !== undefined && (
-              <p className="product-stock">Stok: {stok}</p>
-            )}
-            {status && (
-              <span 
-                className="product-status" 
-                style={{ backgroundColor: getStatusColor(status) }}
-              >
-                {status}
-              </span>
-            )}
+            <p className="product-stock">
+              Stok: {stok !== undefined && stok !== null ? stok : 0}
+            </p>
+            <span
+              className="product-status"
+              style={{ backgroundColor: getStatusColor(status) }}
+            >
+              {getStatusText(status)}
+            </span>
           </div>
+          {/* ===== SAMPAI SINI ===== */}
+          
         </div>
       </div>
 

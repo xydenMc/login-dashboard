@@ -1,12 +1,16 @@
 import { useState } from "react";
+import { supabase } from "../supabase"; // IMPORT SUPABASE
 import "./ProductDetailModal.css";
 
 function ProductDetailModal({ product, onClose }) {
   const [jumlah, setJumlah] = useState(1);
   const [catatan, setCatatan] = useState("");
   const [imageError, setImageError] = useState(false);
+  const [loading, setLoading] = useState(false); // TAMBAH STATE LOADING
+  const [notification, setNotification] = useState({ show: false, message: '', type: '' });
 
   const {
+    id_produk, // <-- PENTING! BUTUH ID PRODUK
     nama_produk,
     deskripsi,
     kategori,
@@ -18,26 +22,105 @@ function ProductDetailModal({ product, onClose }) {
 
   const totalHarga = harga * jumlah;
   
-  const defaultImage = "https://via.placeholder.com/400x300?text=Toko+Gerabah";
-  const imageUrl = (gambar && !imageError) ? gambar : defaultImage;
+  const imageUrl = (!imageError && gambar) 
+    ? gambar 
+    : "https://images.unsplash.com/photo-1578301978018-300d7f8c7e3b?w=400";
 
-  const handleBeli = () => {
-    alert(`Anda membeli ${jumlah} ${nama_produk}\nTotal: Rp ${totalHarga.toLocaleString('id-ID')}\nCatatan: ${catatan || '-'}`);
-    onClose();
+  // FUNGSI NOTIFIKASI
+  const showNotification = (message, type = 'success') => {
+    setNotification({ show: true, message, type });
+    setTimeout(() => {
+      setNotification({ show: false, message: '', type: '' });
+    }, 3000);
   };
 
   const getStatusColor = (status) => {
-    switch(status?.toLowerCase()) {
-      case 'aktif': return '#28a745';
-      case 'nonaktif': return '#dc3545';
-      case 'habis': return '#ffc107';
-      default: return '#6c757d';
+    switch (status?.toLowerCase()) {
+      case 'aktif':
+      case 'tersedia':
+        return '#2fc145';
+      case 'nonaktif':
+        return '#6c757d';
+      case 'habis':
+        return '#6c757d';
+      default:
+        return '#6c757d';
+    }
+  };
+
+  const getStatusText = (status) => {
+    switch (status?.toLowerCase()) {
+      case 'aktif':
+      case 'tersedia':
+        return 'TERSEDIA';
+      case 'nonaktif':
+        return 'NONAKTIF';
+      case 'habis':
+        return 'HABIS';
+      default:
+        return status || 'TERSEDIA';
+    }
+  };
+
+  // ===== FUNGSI BELI DENGAN PENGURANGAN STOK =====
+  const handleBeli = async () => {
+    if (jumlah > stok) {
+      showNotification(`Stok tidak cukup! Stok tersedia: ${stok}`, 'error');
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      // 1. Hitung stok baru
+      const stokBaru = stok - jumlah;
+      
+      // 2. Tentukan status baru (jika stok habis)
+      const statusBaru = stokBaru === 0 ? 'habis' : status;
+
+      // 3. Update ke database
+      const { error } = await supabase
+        .from('products')
+        .update({ 
+          stok: stokBaru,
+          status: statusBaru
+        })
+        .eq('id_produk', id_produk);
+
+      if (error) throw error;
+
+      // 4. Notifikasi sukses
+      showNotification(
+        `✅ Berhasil membeli ${jumlah} ${nama_produk}\nTotal: Rp ${totalHarga.toLocaleString('id-ID')}`,
+        'success'
+      );
+
+      // 5. Tutup modal setelah 1.5 detik
+      setTimeout(() => {
+        onClose();
+        // Refresh data di dashboard (panggil ulang fetchProducts)
+        window.location.reload(); // Simple, atau pake callback
+      }, 1500);
+
+    } catch (error) {
+      console.error("Error buying product:", error);
+      showNotification("❌ Gagal melakukan pembelian", 'error');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="detail-modal" onClick={(e) => e.stopPropagation()}>
+        
+        {/* NOTIFIKASI */}
+        {notification.show && (
+          <div className={`notification ${notification.type}`}>
+            {notification.message}
+          </div>
+        )}
+
         <button className="close-btn" onClick={onClose}>×</button>
         
         <div className="detail-content">
@@ -46,6 +129,7 @@ function ProductDetailModal({ product, onClose }) {
               src={imageUrl}
               alt={nama_produk}
               onError={() => setImageError(true)}
+              style={{ width: '100%', height: '300px', objectFit: 'cover' }}
             />
           </div>
 
@@ -61,12 +145,12 @@ function ProductDetailModal({ product, onClose }) {
             <p className="detail-price">Rp {harga?.toLocaleString('id-ID')}</p>
             
             <div className="detail-stock">
-              <span>Stok: {stok}</span>
+              <span>Stok: {stok !== undefined && stok !== null ? stok : 0}</span>
               <span 
                 className="product-status" 
                 style={{ backgroundColor: getStatusColor(status) }}
               >
-                {status}
+                {getStatusText(status)}
               </span>
             </div>
             
@@ -86,7 +170,7 @@ function ProductDetailModal({ product, onClose }) {
                   <button 
                     type="button"
                     onClick={() => setJumlah(prev => Math.max(1, prev - 1))}
-                    disabled={jumlah <= 1}
+                    disabled={jumlah <= 1 || loading}
                   >
                     -
                   </button>
@@ -95,17 +179,18 @@ function ProductDetailModal({ product, onClose }) {
                     value={jumlah}
                     onChange={(e) => setJumlah(Math.max(1, parseInt(e.target.value) || 1))}
                     min="1"
-                    max={stok}
+                    max={stok || 0}
+                    disabled={loading}
                   />
                   <button 
                     type="button"
-                    onClick={() => setJumlah(prev => Math.min(stok, prev + 1))}
-                    disabled={jumlah >= stok}
+                    onClick={() => setJumlah(prev => Math.min(stok || 0, prev + 1))}
+                    disabled={jumlah >= (stok || 0) || loading}
                   >
                     +
                   </button>
                 </div>
-                <span className="stok-tersedia">Stok tersedia: {stok}</span>
+                <span className="stok-tersedia">Stok tersedia: {stok || 0}</span>
               </div>
 
               <div className="catatan-control">
@@ -115,6 +200,7 @@ function ProductDetailModal({ product, onClose }) {
                   onChange={(e) => setCatatan(e.target.value)}
                   placeholder="Contoh: warna, ukuran, pesan khusus"
                   rows="2"
+                  disabled={loading}
                 />
               </div>
 
@@ -126,9 +212,11 @@ function ProductDetailModal({ product, onClose }) {
               <button 
                 className="buy-now-btn"
                 onClick={handleBeli}
-                disabled={stok === 0 || status === 'nonaktif' || status === 'habis'}
+                disabled={stok === 0 || status === 'nonaktif' || status === 'habis' || loading}
               >
-                {stok === 0 || status === 'habis' ? 'Stok Habis' : 'Beli Sekarang'}
+                {loading ? "Memproses..." : 
+                 stok === 0 || status === 'habis' ? 'Stok Habis' : 
+                 status === 'nonaktif' ? 'Tidak Tersedia' : 'Beli Sekarang'}
               </button>
             </div>
           </div>
