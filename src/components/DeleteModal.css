@@ -1,0 +1,143 @@
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content.delete-modal {
+  background: #E6D3B1;
+  padding: 2rem;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
+  box-shadow: 0 20px 40px rgba(58, 42, 32, 0.4);
+  border: 1px solid #C2A47E;
+}
+
+.delete-modal h2 {
+  color: #3A2A20;
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+}
+
+.delete-modal p {
+  color: #5A3E2B;
+  margin-bottom: 2rem;
+  font-size: 1rem;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.cancel-btn {
+  padding: 0.7rem 1.5rem;
+  border: none;
+  border-radius: 6px;
+  background-color: #C2A47E;
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.cancel-btn:hover {
+  background-color: #8B5E3C;
+}
+
+.delete-btn {
+  padding: 0.7rem 1.5rem;
+  border: none;
+  border-radius: 6px;
+  background-color: #d32f2f;
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.delete-btn:hover {
+  background-color: #b71c1c;
+}
+/* Delete section di modal */
+.delete-section {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid #C2A47E;
+  text-align: center;
+}
+
+.delete-product-btn {
+  background: none;
+  border: 1px solid #dc3545;
+  color: #dc3545;
+  padding: 0.7rem 1.5rem;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  width: 100%;
+}
+
+.delete-product-btn:hover {
+  background: #dc3545;
+  color: white;
+}
+
+/* Delete confirmation */
+.delete-confirm-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1100;
+}
+
+.delete-confirm-modal {
+  background: #E6D3B1;
+  padding: 2rem;
+  border-radius: 12px;
+  max-width: 400px;
+  text-align: center;
+  border: 1px solid #C2A47E;
+}
+
+.delete-confirm-modal p {
+  color: #3A2A20;
+  margin-bottom: 1.5rem;
+  font-size: 1.1rem;
+}
+
+.confirm-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.delete-confirm-btn {
+  background: #dc3545;
+  color: white;
+  border: none;
+  padding: 0.7rem 1.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.delete-confirm-btn:hover {
+  background: #b71c1c;
+}

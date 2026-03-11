@@ -1,0 +1,234 @@
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(58, 42, 32, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: #E6D3B1;
+  padding: 2rem;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 40px rgba(58, 42, 32, 0.4);
+  border: 1px solid #C2A47E;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  border-bottom: 2px solid #C2A47E;
+  padding-bottom: 0.5rem;
+}
+
+.modal-header h2 {
+  color: #3A2A20;
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 1.8rem;
+  cursor: pointer;
+  color: #8B5E3C;
+  line-height: 1;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+}
+
+.close-btn:hover {
+  background-color: #8B5E3C;
+  color: white;
+}
+
+.form-group {
+  margin-bottom: 1.2rem;
+}
+
+.form-group label {
+  display: block;
+  color: #5A3E2B;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.3rem;
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 0.7rem 1rem;
+  border: 1px solid #C2A47E;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  background-color: #ffffff;
+  box-sizing: border-box;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #8B5E3C;
+  box-shadow: 0 0 0 3px rgba(139, 94, 60, 0.1);
+}
+
+.form-group input[type="file"] {
+  padding: 0.5rem;
+  background-color: #F5E6D3;
+}
+
+.image-preview {
+  width: 100%;
+  max-height: 200px;
+  object-fit: cover;
+  margin-top: 0.8rem;
+  border-radius: 8px;
+  border: 2px solid #C2A47E;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.cancel-btn, .save-btn {
+  padding: 0.7rem 1.5rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.cancel-btn {
+  background-color: #C2A47E;
+  color: white;
+}
+
+.cancel-btn:hover {
+  background-color: #8B5E3C;
+}
+
+.save-btn {
+  background-color: #8B5E3C;
+  color: white;
+}
+
+.save-btn:hover {
+  background-color: #6F4528;
+}
+
+.save-btn:disabled {
+  background-color: #C2A47E;
+  cursor: not-allowed;
+}
+
+/* Upload Gambar */
+.upload-container {
+  margin-bottom: 0.5rem;
+}
+
+.file-input {
+  width: 100%;
+  padding: 0.7rem;
+  border: 1px solid #C2A47E;
+  border-radius: 8px;
+  background: white;
+  cursor: pointer;
+}
+
+.upload-info {
+  margin-top: 0.3rem;
+  color: #8B5E3C;
+  font-size: 0.8rem;
+}
+
+.image-preview-container {
+  position: relative;
+  margin-top: 1rem;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid #C2A47E;
+}
+
+.image-preview {
+  width: 100%;
+  max-height: 200px;
+  object-fit: cover;
+  display: block;
+}
+
+.remove-image-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(220, 53, 69, 0.9);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.remove-image-btn:hover {
+  background: #dc3545;
+  transform: scale(1.1);
+}
+
+/* Progress Bar */
+.upload-progress {
+  margin: 1rem 0;
+  height: 20px;
+  background: #E6D3B1;
+  border-radius: 10px;
+  overflow: hidden;
+  position: relative;
+  border: 1px solid #C2A47E;
+}
+
+.progress-bar {
+  height: 100%;
+  background: #8B5E3C;
+  transition: width 0.3s ease;
+  border-radius: 10px;
+}
+
+.upload-progress span {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 0.75rem;
+  font-weight: bold;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+}
