@@ -1,9 +1,12 @@
 import { useEffect, useState } from "react";
+import { supabase } from "../supabase";
 import ProductCard from "../components/ProductCard";
 import "./Dashboard.css";
 
 function Dashboard() {
   const [email, setEmail] = useState("");
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -14,23 +17,33 @@ function Dashboard() {
     
     const userEmail = localStorage.getItem("email");
     setEmail(userEmail || "");
+    
+    // AMBIL DATA PRODUK DARI SUPABASE
+    fetchProducts();
   }, []);
+
+  const fetchProducts = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('products')
+        .select('*');
+      
+      if (error) throw error;
+      setProducts(data || []);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleLogout = (e) => {
     e.preventDefault();
     localStorage.removeItem("token");
     localStorage.removeItem("email");
+    localStorage.removeItem("nama_lengkap");
     window.location.href = "/";
   };
-
-  const products = [
-    { id: 1, title: "Pemrograman Web React", author: "John Doe", price: 150000 },
-    { id: 2, title: "Belajar JavaScript Modern", author: "Jane Smith", price: 120000 },
-    { id: 3, title: "Database untuk Pemula", author: "Bob Johnson", price: 100000 },
-    { id: 4, title: "UI/UX Design Fundamental", author: "Alice Brown", price: 180000 },
-    { id: 5, title: "Mobile Development", author: "Charlie Wilson", price: 200000 },
-    { id: 6, title: "Artificial Intelligence", author: "Diana Prince", price: 250000 },
-  ];
 
   return (
     <div className="dashboard">
@@ -49,14 +62,21 @@ function Dashboard() {
       </nav>
 
       <div className="products-grid">
-        {products.map((product) => (
-          <ProductCard
-            key={product.id}
-            title={product.title}
-            author={product.author}
-            price={product.price}
-          />
-        ))}
+        {loading ? (
+          <p>Loading produk...</p>
+        ) : products.length > 0 ? (
+          products.map((product) => (
+            <ProductCard
+              key={product.id}
+              title={product.title || product.nama_produk}
+              author={product.author || product.penulis}
+              price={product.price || product.harga}
+              image={product.image_url || product.gambar}
+            />
+          ))
+        ) : (
+          <p>Tidak ada produk</p>
+        )}
       </div>
     </div>
   );

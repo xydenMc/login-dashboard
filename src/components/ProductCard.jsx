@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-function ProductCard({ title, author, price }) {
+function ProductCard({ title, author, price, image }) {
   const [imageError, setImageError] = useState(false);
 
   const handleBuyClick = (e) => {
@@ -8,9 +8,10 @@ function ProductCard({ title, author, price }) {
     alert(`Anda membeli: ${title}`);
   };
 
-  const imageUrl = imageError 
-    ? 'https://via.placeholder.com/200x150?text=Product' 
-    : `https://via.placeholder.com/200x150?text=${title.charAt(0)}`;
+  // Pakai gambar dari database atau fallback
+  const imageUrl = image && !imageError 
+    ? image 
+    : 'https://via.placeholder.com/200x150?text=No+Image';
 
   return (
     <div className="product-card">
@@ -24,7 +25,7 @@ function ProductCard({ title, author, price }) {
       <div className="product-info">
         <h3 className="product-title">{title}</h3>
         <p className="product-author">Penulis: {author}</p>
-        <p className="product-price">Rp {price.toLocaleString('id-ID')}</p>
+        <p className="product-price">Rp {price?.toLocaleString('id-ID')}</p>
         <button 
           className="buy-button"
           onClick={handleBuyClick}

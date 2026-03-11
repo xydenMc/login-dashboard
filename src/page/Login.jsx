@@ -1,6 +1,6 @@
 import { useState } from "react";
-import axios from "axios";
 import { Link } from "react-router-dom";
+import { supabase } from "../supabase";
 import "./Login.css";
 
 function Login({ onLogin }) {
@@ -16,20 +16,36 @@ function Login({ onLogin }) {
     setErrorMessage("");
 
     try {
-      const response = await axios.post(
-        "http://localhost:5000/auth/login",
-        { email, password }
-      );
+      // LOGIN PAKAI SUPABASE AUTH
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: email,
+        password: password,
+      });
 
-      localStorage.setItem("token", response.data.token);
+      if (error) throw error;
+
+      // LOGIN BERHASIL - simpan data dasar
+      localStorage.setItem("token", data.session.access_token);
       localStorage.setItem("email", email);
-      
+
+      // COBA AMBIL DATA USER DARI TABEL (OPSIONAL, TIDAK WAJIB)
+      const { data: userData, error: userError } = await supabase
+        .from('users')
+        .select('nama_lengkap')
+        .eq('email', email)
+        .maybeSingle(); // Pakai maybeSingle, bukan single
+
+      if (!userError && userData) {
+        localStorage.setItem("nama_lengkap", userData.nama_lengkap);
+      } else {
+        localStorage.setItem("nama_lengkap", email.split('@')[0]); // fallback
+      }
+
       if (onLogin) onLogin();
-      
-      // Redirect menggunakan window.location
       window.location.href = "/dashboard";
-      
+
     } catch (error) {
+      console.error("Login error:", error);
       setErrorMessage("Email atau password salah");
     } finally {
       setLoading(false);

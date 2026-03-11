@@ -1,9 +1,9 @@
 import { useState } from "react";
-import axios from "axios";
 import { Link } from "react-router-dom";
+import { supabase } from "../supabase";
 import "./Register.css";
 
-function Register({ onRegister }) {
+function Register() {
   const [namaLengkap, setNamaLengkap] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -26,36 +26,47 @@ function Register({ onRegister }) {
       return;
     }
 
-    if (password.length < 6) {
-      setErrorMessage("Password minimal 6 karakter");
-      setLoading(false);
-      return;
-    }
-
     try {
-      // HAPUS 'const response =' karena tidak dipakai
-      await axios.post(
-        "http://localhost:5000/auth/register",
-        {
-          nama_lengkap: namaLengkap,
-          email: email,
-          password: password
+      // 1. Daftar ke Supabase Auth
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email: email,
+        password: password,
+        options: {
+          data: {
+            nama_lengkap: namaLengkap, // Ini akan tersimpan di auth.users
+          }
         }
-      );
+      });
 
-      setSuccessMessage("Registrasi berhasil! Mengalihkan ke login...");
-      
-      // Redirect ke halaman login setelah 2 detik
+      if (authError) throw authError;
+
+      // 2. Simpan data ke tabel users (TANPA PASSWORD!)
+      if (authData.user) {
+        const { error: userError } = await supabase
+          .from('users')
+          .insert([
+            {
+              email: email,
+              nama_lengkap: namaLengkap,
+              role: 'customer'
+              // JANGAN simpan password di sini!
+            }
+          ]);
+
+        if (userError) {
+          console.log("Error insert ke tabel users:", userError);
+          // Tetap lanjut meskipun error, karena auth sudah sukses
+        }
+      }
+
+      setSuccessMessage("Registrasi berhasil! Silakan cek email untuk verifikasi.");
+
       setTimeout(() => {
         window.location.href = "/";
-      }, 2000);
+      }, 3000);
 
     } catch (error) {
-      if (error.response?.status === 400) {
-        setErrorMessage(error.response.data.message);
-      } else {
-        setErrorMessage("Registrasi gagal, silakan coba lagi");
-      }
+      setErrorMessage(error.message);
     } finally {
       setLoading(false);
     }
@@ -78,11 +89,11 @@ function Register({ onRegister }) {
         <div className="form-section">
           <div className="register-card">
             <h2 className="form-header">Daftar Akun</h2>
-            
+
             {errorMessage && (
               <div className="error-message">{errorMessage}</div>
             )}
-            
+
             {successMessage && (
               <div className="success-message">{successMessage}</div>
             )}
