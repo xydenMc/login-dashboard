@@ -24,22 +24,38 @@ function Login({ onLogin }) {
 
       if (error) throw error;
 
-      // LOGIN BERHASIL - simpan data dasar
-      localStorage.setItem("token", data.session.access_token);
-      localStorage.setItem("email", email);
-
-      // COBA AMBIL DATA USER DARI TABEL (OPSIONAL, TIDAK WAJIB)
+      // AMBIL DATA USER DARI TABEL (TERMASUK ROLE!)
       const { data: userData, error: userError } = await supabase
         .from('users')
-        .select('nama_lengkap')
+        .select('nama_lengkap, role') // <-- AMBIL NAMA DAN ROLE
         .eq('email', email)
-        .maybeSingle(); // Pakai maybeSingle, bukan single
+        .maybeSingle();
 
-      if (!userError && userData) {
+      console.log("📦 Data user dari tabel:", userData); // DEBUG
+
+      // SIMPAN DATA KE LOCALSTORAGE
+      localStorage.setItem("token", data.session.access_token);
+      localStorage.setItem("email", email);
+      
+      if (userData?.nama_lengkap) {
         localStorage.setItem("nama_lengkap", userData.nama_lengkap);
       } else {
-        localStorage.setItem("nama_lengkap", email.split('@')[0]); // fallback
+        localStorage.setItem("nama_lengkap", email.split('@')[0]);
       }
+
+      // ===== PENTING! SIMPAN ROLE =====
+      if (userData?.role) {
+        localStorage.setItem("role", userData.role);
+        console.log("🎯 Role disimpan:", userData.role);
+      } else {
+        localStorage.setItem("role", "customer"); // DEFAULT
+        console.log("🎯 Role default (customer)");
+      }
+
+      console.log("✅ LocalStorage setelah login:");
+      console.log("- role:", localStorage.getItem("role"));
+      console.log("- email:", localStorage.getItem("email"));
+      console.log("- nama:", localStorage.getItem("nama_lengkap"));
 
       if (onLogin) onLogin();
       window.location.href = "/dashboard";
@@ -55,14 +71,12 @@ function Login({ onLogin }) {
   return (
     <div className="login-container">
       <div className="split-layout">
-        {/* Bagian Kiri: Selamat Datang */}
         <div className="welcome-section">
           <h1 className="welcome-title">Selamat Datang</h1>
           <p className="welcome-subtitle">di Toko Gerabah</p>
           <div className="welcome-line"></div>
         </div>
 
-        {/* Bagian Kanan: Form Login */}
         <div className="form-section">
           <div className="login-card">
             <h2 className="form-header">Login</h2>
@@ -93,7 +107,7 @@ function Login({ onLogin }) {
                     className="password-toggle"
                     onClick={() => setShowPassword(!showPassword)}
                   >
-                    {showPassword ? "👁️" : "👁️‍🗨️"}
+                    {showPassword ? "👁️‍🗨️" : "👁️‍🗨️"}
                   </button>
                 </div>
               </div>

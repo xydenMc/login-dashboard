@@ -1,11 +1,12 @@
 import { useState } from "react";
 import ProductDetailModal from "./ProductDetailModal";
 
-function ProductCard({ product, onEdit, showEdit }) {
+function ProductCard({ product, onEdit, showEdit, isAdmin }) { // <-- TERIMA PROPS ISADMIN
   const [showDetail, setShowDetail] = useState(false);
   const [imageError, setImageError] = useState(false);
 
   const {
+    id_produk,
     nama_produk,
     kategori,
     harga,
@@ -23,20 +24,19 @@ function ProductCard({ product, onEdit, showEdit }) {
     "https://images.unsplash.com/photo-1544984241-5d5c6b9a89cf?w=400"
   ];
 
-  const defaultImage = unswashImages[product.id_produk % unswashImages.length];
+  const defaultImage = unswashImages[id_produk % unswashImages.length];
 
-  // ===== FUNGSI STATUS WARNA =====
   const getStatusColor = (status) => {
     switch (status?.toLowerCase()) {
       case 'aktif':
       case 'tersedia':
-        return '#2fc145'; // HIJAU
+        return '#2fc145';
       case 'nonaktif':
-        return '#6c757d'; // ABU-ABU
+        return '#6c757d';
       case 'habis':
-        return '#6c757d'; // ABU-ABU
+        return '#6c757d';
       default:
-        return '#6c757d'; // ABU-ABU
+        return '#6c757d';
     }
   };
 
@@ -57,7 +57,8 @@ function ProductCard({ product, onEdit, showEdit }) {
   return (
     <>
       <div className="product-card" onClick={() => setShowDetail(true)}>
-        {showEdit && (
+        {/* TOMBOL EDIT - HANYA UNTUK ADMIN */}
+        {isAdmin && showEdit && (
           <button
             onClick={(e) => {
               e.stopPropagation();
@@ -87,7 +88,6 @@ function ProductCard({ product, onEdit, showEdit }) {
 
           <p className="product-price">Rp {harga?.toLocaleString('id-ID')}</p>
 
-          {/* ===== PRODUCT META - SUDAH BENER ===== */}
           <div className="product-meta">
             <p className="product-stock">
               Stok: {stok !== undefined && stok !== null ? stok : 0}
@@ -99,8 +99,6 @@ function ProductCard({ product, onEdit, showEdit }) {
               {getStatusText(status)}
             </span>
           </div>
-          {/* ===== SAMPAI SINI ===== */}
-          
         </div>
       </div>
 

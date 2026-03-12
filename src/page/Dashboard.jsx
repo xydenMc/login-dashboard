@@ -8,6 +8,7 @@ import "./Dashboard.css";
 function Dashboard() {
   const [email, setEmail] = useState("");
   const [namaLengkap, setNamaLengkap] = useState("");
+  const [userRole, setUserRole] = useState("customer"); // <-- TAMBAH STATE ROLE
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showDropdown, setShowDropdown] = useState(false);
@@ -26,52 +27,57 @@ function Dashboard() {
     
     const userEmail = localStorage.getItem("email");
     const userNama = localStorage.getItem("nama_lengkap");
+    const role = localStorage.getItem("role") || "customer"; // <-- AMBIL ROLE DARI LOCALSTORAGE
+    
     setEmail(userEmail || "");
     setNamaLengkap(userNama || userEmail?.split('@')[0] || "");
+    setUserRole(role); // <-- SET ROLE
     
     fetchProducts();
   }, []);
+
   useEffect(() => {
-  // Bikin variable global untuk debugging
-  window.debugProducts = products;
-  window.debugSupabase = supabase;
-  console.log("✅ Debug siap! Ketik debugProducts di console");
-}, [products]);
+    // Bikin variable global untuk debugging
+    window.debugProducts = products;
+    window.debugSupabase = supabase;
+    console.log("✅ Debug siap! Ketik debugProducts di console");
+    console.log("👤 User Role:", userRole); // <-- DEBUG ROLE
+  }, [products, userRole]);
 
   const fetchProducts = async () => {
-  try {
-    const { data, error } = await supabase
-      .from('products')
-      .select('*')
-      .order('id_produk', { ascending: false });
-    
-    if (error) throw error;
-    
-    // FORMAT DATA - JANGAN LUPA GAMBAR!
-    const formattedProducts = data?.map(item => ({
-      id_produk: item.id_produk,
-      nama_produk: item.nama_produk,
-      deskripsi: item.deskripsi,
-      kategori: item.kategori,
-      harga: item.harga,
-      stok: item.stok,
-      status: item.status,
-      id_kategori: item.id_kategori,
-      gambar: item.gambar // <-- INI YANG LU LUPA!
-    })) || [];
-    
-    setProducts(formattedProducts);
-  } catch (error) {
-    console.error("Error fetching products:", error);
-  } finally {
-    setLoading(false);
-  }
-};
+    try {
+      const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .order('id_produk', { ascending: false });
+      
+      if (error) throw error;
+      
+      const formattedProducts = data?.map(item => ({
+        id_produk: item.id_produk,
+        nama_produk: item.nama_produk,
+        deskripsi: item.deskripsi,
+        kategori: item.kategori,
+        harga: item.harga,
+        stok: item.stok,
+        status: item.status,
+        id_kategori: item.id_kategori,
+        gambar: item.gambar
+      })) || [];
+      
+      setProducts(formattedProducts);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("email");
     localStorage.removeItem("nama_lengkap");
+    localStorage.removeItem("role"); // <-- HAPUS ROLE JUGA
     window.location.href = "/";
   };
 
@@ -125,6 +131,9 @@ function Dashboard() {
   };
 
   const toggleProductSelection = (productId) => {
+    // HANYA ADMIN YANG BISA SELECT PRODUK
+    if (!isAdmin) return;
+    
     setSelectedProducts(prev => {
       if (prev.includes(productId)) {
         return prev.filter(id => id !== productId);
@@ -135,6 +144,9 @@ function Dashboard() {
   };
 
   const toggleSelectAll = () => {
+    // HANYA ADMIN YANG BISA SELECT ALL
+    if (!isAdmin) return;
+    
     if (selectedProducts.length === products.length) {
       setSelectedProducts([]);
     } else {
@@ -142,12 +154,15 @@ function Dashboard() {
     }
   };
 
+  // ===== CEK APAKAH USER ADALAH ADMIN =====
+  const isAdmin = userRole === 'admin';
+
   return (
     <div className="dashboard">
       <nav className="navbar">
         <h1>Dashboard Produk</h1>
         <div className="user-info">
-          <span>Halo, {namaLengkap}!</span>
+          <span>Halo, {namaLengkap}! {isAdmin ? '' : ''}</span>
           <div className="dropdown-container">
             <button 
               onClick={toggleDropdown} 
@@ -158,7 +173,10 @@ function Dashboard() {
             </button>
             {showDropdown && (
               <div className="dropdown-menu">
-                <button onClick={handleAddProduct}>Tambah Produk</button>
+                {/* TOMBOL TAMBAH PRODUK - HANYA UNTUK ADMIN */}
+                {isAdmin && (
+                  <button onClick={handleAddProduct}>Tambah Produk</button>
+                )}
                 <button onClick={handleLogout}>Logout</button>
               </div>
             )}
@@ -166,7 +184,8 @@ function Dashboard() {
         </div>
       </nav>
 
-      {selectedProducts.length > 0 && (
+      {/* SELECTION BAR - HANYA UNTUK ADMIN */}
+      {isAdmin && selectedProducts.length > 0 && (
         <div className="selection-bar">
           <span>{selectedProducts.length} produk dipilih</span>
           <button onClick={toggleSelectAll} type="button">
@@ -184,7 +203,8 @@ function Dashboard() {
         ) : products.length > 0 ? (
           products.map((product) => (
             <div key={product.id_produk} className="product-wrapper">
-              {selectedProducts.length > 0 && (
+              {/* CHECKBOX - HANYA UNTUK ADMIN DAN SEDANG MODE SELECT */}
+              {isAdmin && selectedProducts.length > 0 && (
                 <input
                   type="checkbox"
                   className="product-checkbox"
@@ -194,8 +214,9 @@ function Dashboard() {
               )}
               <ProductCard
                 product={product}
-                onEdit={() => handleEditProduct(product)}
-                showEdit={selectedProducts.length === 0}
+                onEdit={handleEditProduct}
+                showEdit={isAdmin && selectedProducts.length === 0} // EDIT HANYA UNTUK ADMIN
+                isAdmin={isAdmin} // KIRIM PROPS isAdmin
               />
             </div>
           ))
@@ -204,7 +225,8 @@ function Dashboard() {
         )}
       </div>
 
-      {showProductModal && (
+      {/* MODAL TAMBAH/EDIT - HANYA UNTUK ADMIN */}
+      {isAdmin && showProductModal && (
         <ProductModal
           mode={mode}
           product={selectedProduct}
@@ -213,7 +235,8 @@ function Dashboard() {
         />
       )}
 
-      {showDeleteModal && (
+      {/* DELETE MODAL - HANYA UNTUK ADMIN */}
+      {isAdmin && showDeleteModal && (
         <DeleteModal
           count={selectedProducts.length}
           onConfirm={handleDeleteConfirm}

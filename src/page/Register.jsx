@@ -42,20 +42,35 @@ function Register() {
 
       // 2. Simpan data ke tabel users (TANPA PASSWORD!)
       if (authData.user) {
-        const { error: userError } = await supabase
+        console.log("🔍 Mencoba insert ke users:", {
+          email: email,
+          nama_lengkap: namaLengkap,
+          role: 'customer'
+        });
+
+        const { data, error: userError } = await supabase
           .from('users')
           .insert([
             {
               email: email,
               nama_lengkap: namaLengkap,
               role: 'customer'
-              // JANGAN simpan password di sini!
             }
-          ]);
+          ])
+          .select(); // PENTING! .select() buat liat hasil
 
         if (userError) {
-          console.log("Error insert ke tabel users:", userError);
-          // Tetap lanjut meskipun error, karena auth sudah sukses
+          console.log("❌ ERROR DETAIL:");
+          console.log("Error code:", userError.code);
+          console.log("Error message:", userError.message);
+          console.log("Error details:", userError.details);
+          console.log("Error hint:", userError.hint);
+
+          // Tampilkan error ke user
+          setErrorMessage("Gagal menyimpan data: " + userError.message);
+
+        } else {
+          console.log("✅ INSERT SUKSES:", data);
         }
       }
 
@@ -182,6 +197,7 @@ function Register() {
       </div>
     </div>
   );
+
 }
 
 export default Register;
