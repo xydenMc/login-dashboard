@@ -1,16 +1,16 @@
 import { useState } from "react";
-import { supabase } from "../supabase"; // IMPORT SUPABASE
+import { supabase } from "../supabase";
 import "./ProductDetailModal.css";
 
 function ProductDetailModal({ product, onClose }) {
   const [jumlah, setJumlah] = useState(1);
   const [catatan, setCatatan] = useState("");
   const [imageError, setImageError] = useState(false);
-  const [loading, setLoading] = useState(false); // TAMBAH STATE LOADING
+  const [loading, setLoading] = useState(false);
   const [notification, setNotification] = useState({ show: false, message: '', type: '' });
 
   const {
-    id_produk, // <-- PENTING! BUTUH ID PRODUK
+    id_produk,
     nama_produk,
     deskripsi,
     kategori,
@@ -26,7 +26,6 @@ function ProductDetailModal({ product, onClose }) {
     ? gambar 
     : "https://images.unsplash.com/photo-1578301978018-300d7f8c7e3b?w=400";
 
-  // FUNGSI NOTIFIKASI
   const showNotification = (message, type = 'success') => {
     setNotification({ show: true, message, type });
     setTimeout(() => {
@@ -62,7 +61,6 @@ function ProductDetailModal({ product, onClose }) {
     }
   };
 
-  // ===== FUNGSI BELI DENGAN PENGURANGAN STOK =====
   const handleBeli = async () => {
     if (jumlah > stok) {
       showNotification(`Stok tidak cukup! Stok tersedia: ${stok}`, 'error');
@@ -72,13 +70,9 @@ function ProductDetailModal({ product, onClose }) {
     setLoading(true);
 
     try {
-      // 1. Hitung stok baru
       const stokBaru = stok - jumlah;
-      
-      // 2. Tentukan status baru (jika stok habis)
       const statusBaru = stokBaru === 0 ? 'habis' : status;
 
-      // 3. Update ke database
       const { error } = await supabase
         .from('products')
         .update({ 
@@ -89,17 +83,11 @@ function ProductDetailModal({ product, onClose }) {
 
       if (error) throw error;
 
-      // 4. Notifikasi sukses
-      showNotification(
-        `✅ Berhasil membeli ${jumlah} ${nama_produk}\nTotal: Rp ${totalHarga.toLocaleString('id-ID')}`,
-        'success'
-      );
+      showNotification(`✅ Berhasil membeli ${jumlah} ${nama_produk}`, 'success');
 
-      // 5. Tutup modal setelah 1.5 detik
       setTimeout(() => {
         onClose();
-        // Refresh data di dashboard (panggil ulang fetchProducts)
-        window.location.reload(); // Simple, atau pake callback
+        window.location.reload();
       }, 1500);
 
     } catch (error) {
@@ -114,7 +102,6 @@ function ProductDetailModal({ product, onClose }) {
     <div className="modal-overlay" onClick={onClose}>
       <div className="detail-modal" onClick={(e) => e.stopPropagation()}>
         
-        {/* NOTIFIKASI */}
         {notification.show && (
           <div className={`notification ${notification.type}`}>
             {notification.message}
@@ -124,15 +111,17 @@ function ProductDetailModal({ product, onClose }) {
         <button className="close-btn" onClick={onClose}>×</button>
         
         <div className="detail-content">
+          
+          {/* GAMBAR - TETAP DI ATAS */}
           <div className="detail-image">
             <img 
               src={imageUrl}
               alt={nama_produk}
               onError={() => setImageError(true)}
-              style={{ width: '100%', height: '300px', objectFit: 'cover' }}
             />
           </div>
 
+          {/* INFO PRODUK - RAPI KAYAK AWAL */}
           <div className="detail-info">
             <h2>{nama_produk}</h2>
             
@@ -161,6 +150,7 @@ function ProductDetailModal({ product, onClose }) {
               </div>
             )}
 
+            {/* FORM BELI - TETAP DI BAWAH */}
             <div className="buy-section">
               <h4>Beli Produk</h4>
               
@@ -171,9 +161,7 @@ function ProductDetailModal({ product, onClose }) {
                     type="button"
                     onClick={() => setJumlah(prev => Math.max(1, prev - 1))}
                     disabled={jumlah <= 1 || loading}
-                  >
-                    -
-                  </button>
+                  >-</button>
                   <input
                     type="number"
                     value={jumlah}
@@ -186,9 +174,7 @@ function ProductDetailModal({ product, onClose }) {
                     type="button"
                     onClick={() => setJumlah(prev => Math.min(stok || 0, prev + 1))}
                     disabled={jumlah >= (stok || 0) || loading}
-                  >
-                    +
-                  </button>
+                  >+</button>
                 </div>
                 <span className="stok-tersedia">Stok tersedia: {stok || 0}</span>
               </div>
@@ -215,8 +201,7 @@ function ProductDetailModal({ product, onClose }) {
                 disabled={stok === 0 || status === 'nonaktif' || status === 'habis' || loading}
               >
                 {loading ? "Memproses..." : 
-                 stok === 0 || status === 'habis' ? 'Stok Habis' : 
-                 status === 'nonaktif' ? 'Tidak Tersedia' : 'Beli Sekarang'}
+                 stok === 0 || status === 'habis' ? 'Stok Habis' : 'Beli Sekarang'}
               </button>
             </div>
           </div>

@@ -1,112 +1,198 @@
-/* Product Detail Modal */
+/* ========== MODAL OVERLAY ========== */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(58, 42, 32, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* ========== DETAIL MODAL ========== */
 .detail-modal {
-  background: #E6D3B1;
-  border-radius: 12px;
+  background: white;
+  border-radius: 20px;
   width: 90%;
-  max-width: 900px;
+  max-width: 500px;
   max-height: 90vh;
   overflow-y: auto;
   position: relative;
-  box-shadow: 0 20px 40px rgba(58, 42, 32, 0.4);
-  border: 1px solid #C2A47E;
+  box-shadow: 0 20px 40px rgba(58, 42, 32, 0.3);
+  animation: modalFadeIn 0.3s ease;
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.close-btn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: white;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #8B5E3C;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  z-index: 10;
+  transition: all 0.2s;
+}
+
+.close-btn:hover {
+  background: #8B5E3C;
+  color: white;
+  transform: scale(1.1);
 }
 
 .detail-content {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2rem;
-  padding: 2rem;
+  padding: 24px;
 }
 
+/* ========== GAMBAR ========== */
 .detail-image {
   width: 100%;
-  height: 100%;
-  min-height: 300px;
-  background: #C2A47E;
-  border-radius: 8px;
+  height: 250px;
+  background: #f5f5f5;
+  border-radius: 12px;
   overflow: hidden;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #C2A47E;
 }
 
 .detail-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  transition: transform 0.3s ease;
 }
 
-.detail-info {
-  padding: 1rem 0;
-}
-
+/* ========== INFO PRODUK ========== */
 .detail-info h2 {
   color: #3A2A20;
-  font-size: 1.8rem;
-  margin: 0 0 0.5rem 0;
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin-bottom: 8px;
 }
 
 .detail-category {
   color: #8B5E3C;
-  margin-bottom: 1rem;
+  font-size: 1rem;
+  margin-bottom: 12px;
+}
+
+.category-badge {
+  background: #8B5E3C;
+  color: white;
+  padding: 4px 12px;
+  border-radius: 30px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: inline-block;
+  margin-left: 8px;
 }
 
 .detail-price {
   font-size: 2rem;
-  font-weight: 700;
+  font-weight: 800;
   color: #6F4528;
-  margin: 1rem 0;
+  margin: 16px 0;
 }
 
 .detail-stock {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  margin: 1rem 0;
+  justify-content: space-between;
+  margin: 16px 0;
+  padding: 12px 0;
+  border-top: 1px solid #C2A47E;
+  border-bottom: 1px solid #C2A47E;
 }
 
 .detail-description {
-  margin: 1.5rem 0;
-  padding: 1rem;
-  background: #F5E6D3;
-  border-radius: 8px;
-  border: 1px solid #C2A47E;
+  background: #F9F5F0;
+  padding: 16px;
+  border-radius: 12px;
+  margin: 16px 0;
+  border-left: 4px solid #8B5E3C;
 }
 
 .detail-description h4 {
   color: #3A2A20;
-  margin: 0 0 0.5rem 0;
+  font-size: 1rem;
+  margin-bottom: 8px;
 }
 
 .detail-description p {
-  color: #5A3E2B;
+  color: #666;
   line-height: 1.6;
+  font-size: 0.95rem;
 }
 
-/* Buy Section */
+/* ========== PRODUCT STATUS ========== */
+.product-status {
+  padding: 4px 12px;
+  border-radius: 30px;
+  color: white;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: inline-block;
+}
+
+/* ========== BUY SECTION ========== */
 .buy-section {
-  margin-top: 2rem;
-  padding-top: 1.5rem;
-  border-top: 2px solid #C2A47E;
+  margin-top: 24px;
 }
 
 .buy-section h4 {
   color: #3A2A20;
-  margin: 0 0 1rem 0;
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 16px;
 }
 
 .jumlah-control {
-  margin-bottom: 1rem;
+  margin-bottom: 16px;
 }
 
 .jumlah-control label {
   display: block;
   color: #5A3E2B;
-  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
   font-weight: 600;
+  margin-bottom: 8px;
 }
 
 .jumlah-input {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 8px;
 }
 
 .jumlah-input button {
@@ -114,20 +200,25 @@
   height: 40px;
   border: 1px solid #C2A47E;
   background: white;
-  border-radius: 4px;
+  border-radius: 8px;
   font-size: 1.2rem;
+  font-weight: bold;
   cursor: pointer;
   transition: all 0.2s;
+  color: #8B5E3C;
 }
 
 .jumlah-input button:hover:not(:disabled) {
   background: #8B5E3C;
   color: white;
+  border-color: #8B5E3C;
 }
 
 .jumlah-input button:disabled {
-  opacity: 0.5;
+  background: #f5f5f5;
+  color: #ccc;
   cursor: not-allowed;
+  border-color: #ddd;
 }
 
 .jumlah-input input {
@@ -135,125 +226,132 @@
   height: 40px;
   text-align: center;
   border: 1px solid #C2A47E;
-  border-radius: 4px;
+  border-radius: 8px;
   font-size: 1rem;
+  font-weight: 600;
+}
+
+.jumlah-input input:focus {
+  outline: none;
+  border-color: #8B5E3C;
+  box-shadow: 0 0 0 3px rgba(139, 94, 60, 0.1);
 }
 
 .stok-tersedia {
   display: block;
-  margin-top: 0.5rem;
-  color: #8B5E3C;
+  margin-top: 8px;
+  color: #28a745;
   font-size: 0.9rem;
+  font-weight: 500;
+  background: #e8f5e9;
+  padding: 4px 12px;
+  border-radius: 30px;
+  display: inline-block;
 }
 
+/* ========== CATATAN ========== */
 .catatan-control {
-  margin-bottom: 1.5rem;
+  margin-bottom: 20px;
 }
 
 .catatan-control label {
   display: block;
   color: #5A3E2B;
-  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
   font-weight: 600;
+  margin-bottom: 8px;
 }
 
 .catatan-control textarea {
   width: 100%;
-  padding: 0.7rem;
+  padding: 12px;
   border: 1px solid #C2A47E;
-  border-radius: 4px;
+  border-radius: 8px;
   font-size: 0.95rem;
   resize: vertical;
+  transition: all 0.2s;
 }
 
+.catatan-control textarea:focus {
+  outline: none;
+  border-color: #8B5E3C;
+  box-shadow: 0 0 0 3px rgba(139, 94, 60, 0.1);
+}
+
+/* ========== TOTAL HARGA ========== */
 .total-harga {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin: 1.5rem 0;
-  padding: 1rem;
-  background: #F5E6D3;
-  border-radius: 8px;
+  background: #8B5E3C;
+  color: white;
+  padding: 16px 20px;
+  border-radius: 12px;
+  margin: 20px 0;
 }
 
-.total-harga span {
-  font-size: 1.1rem;
-  color: #5A3E2B;
+.total-harga span:first-child {
+  font-size: 1rem;
+  font-weight: 500;
 }
 
 .total-nominal {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #6F4528;
+  font-size: 1.4rem;
+  font-weight: 800;
 }
 
+/* ========== TOMBOL BELI ========== */
 .buy-now-btn {
   width: 100%;
-  padding: 1rem;
-  background: #8B5E3C;
+  padding: 14px;
+  background: #3A2A20;
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: 30px;
   font-size: 1.1rem;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: all 0.3s;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .buy-now-btn:hover:not(:disabled) {
-  background: #6F4528;
+  background: #8B5E3C;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
 }
 
 .buy-now-btn:disabled {
-  background: #C2A47E;
+  background: #ccc;
   cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-  .detail-content {
-    grid-template-columns: 1fr;
-    gap: 1rem;
-    padding: 1.5rem;
-  }
-  
-  .detail-image {
-    min-height: 250px;
-  }
-  
-  .detail-info h2 {
-    font-size: 1.5rem;
-  }
-  
-  .detail-price {
-    font-size: 1.5rem;
-  }
-}
-/* ========== NOTIFICATION STYLES ========== */
+/* ========== NOTIFICATION ========== */
 .notification {
   position: absolute;
   top: 20px;
   left: 50%;
   transform: translateX(-50%);
-  padding: 1rem 2rem;
+  padding: 12px 24px;
   border-radius: 30px;
   font-size: 0.95rem;
   font-weight: 500;
-  z-index: 1200;
+  z-index: 1100;
   box-shadow: 0 4px 15px rgba(0,0,0,0.2);
   animation: slideDown 0.3s ease;
-  white-space: pre-line;
-  text-align: center;
-  min-width: 300px;
+  white-space: nowrap;
 }
 
 .notification.success {
-  background: linear-gradient(135deg, #28a745, #20c997);
+  background: #28a745;
   color: white;
 }
 
 .notification.error {
-  background: linear-gradient(135deg, #dc3545, #c82333);
+  background: #dc3545;
   color: white;
 }
 
@@ -268,8 +366,35 @@
   }
 }
 
-/* Pastikan detail-modal punya position relative */
-.detail-modal {
-  position: relative;
-  /* ... properti lainnya ... */
+/* ========== RESPONSIVE ========== */
+@media (max-width: 480px) {
+  .detail-modal {
+    width: 95%;
+    max-height: 95vh;
+  }
+  
+  .detail-content {
+    padding: 16px;
+  }
+  
+  .detail-image {
+    height: 200px;
+  }
+  
+  .detail-info h2 {
+    font-size: 1.3rem;
+  }
+  
+  .detail-price {
+    font-size: 1.5rem;
+  }
+  
+  .jumlah-input button {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .jumlah-input input {
+    width: 60px;
+  }
 }

@@ -74,7 +74,13 @@ function ProductCard({ product, onEdit, showEdit, isAdmin }) { // <-- TERIMA PRO
             src={!imageError && gambar ? gambar : defaultImage}
             alt={nama_produk}
             onError={() => setImageError(true)}
-            style={{ width: '100%', height: '200px', objectFit: 'cover' }}
+            style={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'contain',  // GANTI DARI 'cover' KE 'contain'
+              backgroundColor: '#f5f5f5',
+              padding: '10px'  // TAMBAH PADDING biar ga nempel
+            }}
           />
         </div>
         <div className="product-info">
@@ -94,6 +100,7 @@ function ProductCard({ product, onEdit, showEdit, isAdmin }) { // <-- TERIMA PRO
             </p>
             <span
               className="product-status"
+              data-status={status?.toLowerCase()}
               style={{ backgroundColor: getStatusColor(status) }}
             >
               {getStatusText(status)}
